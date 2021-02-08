@@ -30,7 +30,7 @@ A built-in assumption of the scikit-learn library is that all data being fed int
 
 #### 4. Add Interaction Terms
 
-This step gets into the feature engineering part of preprocessing. Does our model improve as we add interaction terms? In this step you will use a `PolynomialFeatures` transformer to augment the existing features of the dataset.
+This step gets further into the feature engineering part of preprocessing. Does our model improve as we add interaction terms? In this step you will use a `PolynomialFeatures` transformer to augment the existing features of the dataset.
 
 #### 5. Scale Data
 
@@ -217,9 +217,10 @@ X_train, step_5_transformers = scale(X_train)
 
 model = ElasticNet(random_state=1)
 model.fit(X_train, y_train)
+model.score(X_train, y_train)
 ```
 
-(The transformers have all been returned by the functions, so theoretically we could use them to transform the test data appropriately, but for now we'll skip that step for time.)
+(The transformers have all been returned by the functions, so theoretically we could use them to transform the test data appropriately, but for now we'll skip that step to save time.)
 
 ## Refactoring into a Pipeline
 
@@ -470,9 +471,9 @@ pd.DataFrame(
 
 #### Adding a Missing Indicator
 
-If you recall from the previous lesson, a `FeatureUnion` is useful when you want to combine engineered features with original (but preprocessed) features.
+Recall from the previous lesson that a `FeatureUnion` is useful when you want to combine engineered features with original (but preprocessed) features.
 
-In this case, we are treating a `MissingIndicator` as an engineered feature, which should appear as the last column in our `X` data regardless of whether there are actually any missing values in `LotFrontage`.
+In this case, we are treating a `MissingIndicator` as an engineered feature, which should appear as the last column in our `X` data regardless of whether there are actually any missing values in `LotFrontage`. (In other words, even if every value of `LotFrontage` is present and every value in the new column is therefore identical. This is why we will specify `features="all"` when creating the `MissingIndicator`.)
 
 First, let's refactor our entire pipeline so far, so that it uses a `FeatureUnion`:
 
@@ -521,6 +522,8 @@ pd.DataFrame(
     columns=columns_needing_preprocessing + passthrough_columns
 )
 ```
+
+(The output above should be identical to the previous output; all we have done is changed the structure of the code somewhat.)
 
 Now we can add another item to the `FeatureUnion`!
 
@@ -581,6 +584,174 @@ pd.DataFrame(
 ```
 
 Now we should have a dataframe with 16 columns: our original 15 relevant columns (in various states of preprocessing completion) plus a new engineered column.
+
+### 3. Convert Categorical Features into Numbers
+
+In the initial version of this code, we used `LabelBinarizer` for features with only two categories, and `OneHotEncoder` for features with more than two categories.
+
+`LabelBinarizer` is not designed to work with pipelines, so we'll need a slightly different strategy.
+
+Fortunately, it is possible to use a `OneHotEncoder` to achieve the same outcome as a `LabelBinarizer`: specifically, if we specify `drop="first"`.
+
+(*Why use a `LabelBinarizer` rather than a `OneHotEncoder` at all, then?* Outside of the context of pipelines, the output of a `OneHotEncoder` is more difficult to work with.)
+
+#### `OneHotEncoder` with `drop="first"` for `Street`
+
+Let's start with the `Street` feature. The only thing we need to modify is the `ColumnTransformer` for preprocessed features. In the cell below, replace `None` so that we add a `OneHotEncoder` with `drop="first"` and `categories="auto"`, which applies specifically to the `Street` feature:
+
+
+```python
+# Replace None with appropriate code
+
+# ColumnTransformer for columns requiring preprocessing
+preprocess_cols_transformer = ColumnTransformer(transformers=[
+    ("fireplace_qu", fireplace_qu_pipe, ["FireplaceQu"]),
+    ("impute_frontage", SimpleImputer(strategy="median"), ["LotFrontage"]),
+    (
+        None, # Name for transformer
+        None, # OneHotEncoder with categories="auto" and drop="first"
+        None  # List of relevant columns
+    )
+], remainder="passthrough")
+```
+
+Now, run the full pipeline below. `Street` should now be encoded as 1s and 0s (although only 1s are visible in this example):
+
+
+```python
+# Run this cell without changes
+
+# ColumnTransformer for all original features that we want to keep
+relevant_cols_transformer = ColumnTransformer(transformers=[
+    ("preprocess", preprocess_cols_transformer, columns_needing_preprocessing),
+    ("passthrough", FunctionTransformer(), passthrough_columns)
+], remainder="drop")
+
+# Feature union (currently only contains original features)
+feature_union = FeatureUnion(transformer_list=[
+    ("original_features", relevant_cols_transformer),
+    ("engineered_features", feature_eng)
+])
+
+# Pipeline (currently only contains feature union)
+pipe = Pipeline(steps=[
+    ("all_features", feature_union)
+])
+pipe.fit_transform(X_train)
+
+# Transform X_train and create dataframe for readability
+X_train_transformed = pipe.fit_transform(X_train)
+pd.DataFrame(
+    X_train_transformed,
+    columns=columns_needing_preprocessing + passthrough_columns + ["LotFrontage_Missing"]
+)
+```
+
+#### `OneHotEncoder` for `FireplaceQu`
+
+Now we also need to apply a `OneHotEncoder` to the `FireplaceQu` column. In this case we don't need to drop any columns. (We are using a predictive framing here, so we will tolerate multicollinearity for the potential of better prediction results.)
+
+Previously, we made a pipeline to contain the code for `FireplaceQu`:
+
+```python
+fireplace_qu_pipe = Pipeline(steps=[
+    ("impute", SimpleImputer(strategy="constant", fill_value="N/A"))
+])
+```
+
+***Why do we have a pipeline inside of a pipeline?***
+
+As we have said before, a pipeline is useful if we want to perform the exact same steps on all columns. In this case "all columns" just means `FireplaceQu` (because we previously used a `ColumnTransformer`), but if we had multiple features with similar properties (some missing data, more than 2 categories) we could change the `ColumnTransformer` list and then this pipeline would be used for multiple columns.
+
+The reason this needs to be a pipeline and not just two separate tuples within the `ColumnTransformer` is that `OneHotEncoder` will crash if there is any missing data. So we need to run `SimpleImputer` first, then `OneHotEncoder`, and the way to do this is with a pipeline. But because we don't want these steps to apply to every single feature in the dataset, this needs to be a pipeline nested within a `ColumnTransformer` within the larger pipeline.
+
+In the cell below, replace `None` to add a `OneHotEncoder` step to the `fireplace_qu` pipeline:
+
+
+```python
+# Replace None with appropriate code
+fireplace_qu_pipe = Pipeline(steps=[
+    ("impute", SimpleImputer(strategy="constant", fill_value="N/A")),
+    (
+        "one_hot_encode", # String label for the step
+        None  # OneHotEncoder with categories="auto" and handle_unknown="ignore"
+    )
+])
+```
+
+Test it out here:
+
+
+```python
+# Run this cell without changes
+
+# ColumnTransformer for columns requiring preprocessing
+preprocess_cols_transformer = ColumnTransformer(transformers=[
+    ("fireplace_qu", fireplace_qu_pipe, ["FireplaceQu"]),
+    ("impute_frontage", SimpleImputer(strategy="median"), ["LotFrontage"]),
+    ("encode_street", OneHotEncoder(categories="auto", drop="first"),["Street"])
+], remainder="passthrough")
+
+# ColumnTransformer for all original features that we want to keep
+relevant_cols_transformer = ColumnTransformer(transformers=[
+    ("preprocess", preprocess_cols_transformer, columns_needing_preprocessing),
+    ("passthrough", FunctionTransformer(), passthrough_columns)
+], remainder="drop")
+
+# Feature union (currently only contains original features)
+feature_union = FeatureUnion(transformer_list=[
+    ("original_features", relevant_cols_transformer),
+    ("engineered_features", feature_eng)
+])
+
+# Pipeline (currently only contains feature union)
+pipe = Pipeline(steps=[
+    ("all_features", feature_union)
+])
+pipe.fit_transform(X_train)
+
+# Transform X_train and create dataframe for readability
+
+X_train_transformed = pipe.fit_transform(X_train)
+
+# It's pretty involved to get the OHE names here. Most of the
+# time you don't need this step, the idea is just to improve
+# dataframe readability for you, so these labels are hard-coded
+
+df_columns = [
+    # One-hot encoded FireplaceQu
+    'Ex', 'Fa', 'Gd', 'N/A', 'Po', 'TA',
+    # Other preprocessed columns
+    'LotFrontage', 'Street',
+    # Other columns that need to be preprocessed eventually
+    'GrLivArea', 'LotArea', 'YearBuilt', 'OverallQual',
+    # Passthrough columns
+    'BedroomAbvGr', 'YrSold', 'MoSold', 'FullBath', 'Fireplaces',
+    'YearRemodAdd', 'OverallCond', 'TotRmsAbvGrd', 'LotFrontage_Missing'
+]
+pd.DataFrame(
+    X_train_transformed,
+    columns=df_columns
+)
+```
+
+Now is a good time to look at the overall pipeline again, to understand what all the pieces are doing:
+
+
+```python
+# Run this cell without changes
+pipe
+```
+
+Now we're finally at the point where we can make a prediction, using `pipe` to preprocess the data, and an `ElasticNet` model to predict!
+
+
+```python
+# Run this cell without changes
+model = ElasticNet(random_state=1)
+model.fit(X_train_transformed, y_train)
+model.score(X_train_transformed, y_train)
+```
 
 
 ```python
