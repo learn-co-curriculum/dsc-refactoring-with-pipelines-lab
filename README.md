@@ -287,6 +287,10 @@ print("Need preprocessing:", columns_needing_preprocessing)
 print("Passthrough:", passthrough_columns)
 ```
 
+In this step, we are building a pipeline that looks something like this:
+
+![step 1 pipeline](images/step_1_pipeline.png)
+
 In the cell below, replace `None` to build a `ColumnTransformer` that keeps only the columns in `columns_needing_preprocessing` and `passthrough_columns`. We'll use an empty `FunctionTransformer` as a placeholder transformer for each. (In other words, there is no actual transformation happening, we are only using `ColumnTransformer` to select columns for now.)
 
 
@@ -298,7 +302,7 @@ from sklearn.preprocessing import FunctionTransformer
 
 relevant_cols_transformer = ColumnTransformer(transformers=[
     # Some columns will be used for preprocessing/feature engineering
-    ("preprocess", FunctionTransformer(), None), # <-- replace None
+    ("preprocess", FunctionTransformer(validate=False), None), # <-- replace None
     # Some columns just pass through
     ("passthrough", FunctionTransformer(), None) # <-- replace None
 ], remainder="drop")
@@ -330,7 +334,9 @@ pd.DataFrame(
 
 If you're getting stuck here, look at the solution branch in order to move forward.
 
-Great! Now we have only the 15 relevant columns selected. They are in a different order, but the overall effect is the same as the `drop_irrelevant_columns` function above. The pipeline structure looks like this:
+Great! Now we have only the 15 relevant columns selected. They are in a different order, but the overall effect is the same as the `drop_irrelevant_columns` function above.
+
+Run this code to create an HTML rendering of the pipeline, and compare it to the image above:
 
 
 ```python
@@ -349,6 +355,9 @@ Same as before, we actually have two parts of handling missing values:
 * Imputing missing values for `FireplaceQu` and `LotFrontage`
 * Adding a missing indicator column for `LotFrontage`
 
+When this step is complete, we should have a pipeline that looks something like this:
+
+![step 2 pipeline](images/step_2_pipeline.png)
 
 Let's start with imputing missing values.
 
@@ -410,13 +419,7 @@ pd.DataFrame(
 
 (If you get `ValueError: 1D data passed to a transformer that expects 2D data. Try to specify the column selection as a list of one item instead of a scalar.`, make sure you specified a *list* of column names, not just the column name. It should be a list of length 1.)
 
-Now we can see "N/A" instead of "NaN" in those `FireplaceQu` records. We can also look at the structure of the pipeline, which is more complex now:
-
-
-```python
-# Run this cell without changes
-pipe
-```
+Now we can see "N/A" instead of "NaN" in those `FireplaceQu` records.
 
 #### Imputing `LotFrontage`
 
@@ -585,7 +588,19 @@ pd.DataFrame(
 
 Now we should have a dataframe with 16 columns: our original 15 relevant columns (in various states of preprocessing completion) plus a new engineered column.
 
+Run the cell below to view the interactive HTML version of the pipeline, and compare it to the image above:
+
+
+```python
+# Run this cell without changes
+pipe
+```
+
 ### 3. Convert Categorical Features into Numbers
+
+Next, let's convert the categorical features into numbers. This is the final step required for a model to be able to run without errors! At the end of this step, your pipeline should look something like this:
+
+![step 3 pipeline](images/step_3_pipeline.png)
 
 In the initial version of this code, we used `LabelBinarizer` for features with only two categories, and `OneHotEncoder` for features with more than two categories.
 
@@ -735,7 +750,7 @@ pd.DataFrame(
 )
 ```
 
-Now is a good time to look at the overall pipeline again, to understand what all the pieces are doing:
+Now is a good time to look at the overall pipeline again, to understand what all the pieces are doing and compare them to the image above:
 
 
 ```python
@@ -752,6 +767,8 @@ model = ElasticNet(random_state=1)
 model.fit(X_train_transformed, y_train)
 model.score(X_train_transformed, y_train)
 ```
+
+(Note: this time we skipped over converting the `True` and `False` values into `1` and `0`, because we know that we are using a scikit-learn model that will typecast those appropriately. You could create a pipeline to convert the `MissingIndicator` results into one-hot encoded values if you wanted to!)
 
 
 ```python
