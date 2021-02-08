@@ -30,7 +30,7 @@ A built-in assumption of the scikit-learn library is that all data being fed int
 
 #### 4. Add Interaction Terms
 
-This step gets into the feature engineering part of preprocessing. Does our model improve as we add interaction terms? In this step you will use a `PolynomialFeatures` transformer to augment the existing features of the dataset.
+This step gets further into the feature engineering part of preprocessing. Does our model improve as we add interaction terms? In this step you will use a `PolynomialFeatures` transformer to augment the existing features of the dataset.
 
 #### 5. Scale Data
 
@@ -210,16 +210,17 @@ X_train, step_5_transformers = scale(X_train)
 
 model = ElasticNet(random_state=1)
 model.fit(X_train, y_train)
+model.score(X_train, y_train)
 ```
 
 
 
 
-    ElasticNet(random_state=1)
+    0.7689584240617833
 
 
 
-(The transformers have all been returned by the functions, so theoretically we could use them to transform the test data appropriately, but for now we'll skip that step for time.)
+(The transformers have all been returned by the functions, so theoretically we could use them to transform the test data appropriately, but for now we'll skip that step to save time.)
 
 ## Refactoring into a Pipeline
 
@@ -284,8 +285,8 @@ print("Need preprocessing:", columns_needing_preprocessing)
 print("Passthrough:", passthrough_columns)
 ```
 
-    Need preprocessing: ['FireplaceQu', 'LotFrontage', 'Street', 'GrLivArea', 'LotArea', 'YearBuilt', 'OverallQual']
-    Passthrough: ['BedroomAbvGr', 'YrSold', 'MoSold', 'FullBath', 'Fireplaces', 'YearRemodAdd', 'OverallCond', 'TotRmsAbvGrd']
+    Need preprocessing: ['FireplaceQu', 'LotFrontage', 'Street', 'LotArea', 'YearBuilt', 'GrLivArea', 'OverallQual']
+    Passthrough: ['FullBath', 'BedroomAbvGr', 'YrSold', 'Fireplaces', 'MoSold', 'OverallCond', 'YearRemodAdd', 'TotRmsAbvGrd']
 
 
 In the cell below, replace `None` to build a `ColumnTransformer` that keeps only the columns in `columns_needing_preprocessing` and `passthrough_columns`. We'll use an empty `FunctionTransformer` as a placeholder transformer for each. (In other words, there is no actual transformation happening, we are only using `ColumnTransformer` to select columns for now.)
@@ -349,17 +350,17 @@ pd.DataFrame(
       <th>FireplaceQu</th>
       <th>LotFrontage</th>
       <th>Street</th>
-      <th>GrLivArea</th>
       <th>LotArea</th>
       <th>YearBuilt</th>
+      <th>GrLivArea</th>
       <th>OverallQual</th>
+      <th>FullBath</th>
       <th>BedroomAbvGr</th>
       <th>YrSold</th>
-      <th>MoSold</th>
-      <th>FullBath</th>
       <th>Fireplaces</th>
-      <th>YearRemodAdd</th>
+      <th>MoSold</th>
       <th>OverallCond</th>
+      <th>YearRemodAdd</th>
       <th>TotRmsAbvGrd</th>
     </tr>
   </thead>
@@ -369,17 +370,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>43</td>
       <td>Pave</td>
-      <td>1504</td>
       <td>3182</td>
       <td>2005</td>
+      <td>1504</td>
       <td>7</td>
       <td>2</td>
-      <td>2008</td>
-      <td>5</td>
       <td>2</td>
+      <td>2008</td>
       <td>1</td>
-      <td>2006</td>
       <td>5</td>
+      <td>5</td>
+      <td>2006</td>
       <td>7</td>
     </tr>
     <tr>
@@ -387,17 +388,17 @@ pd.DataFrame(
       <td>Fa</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1309</td>
       <td>10140</td>
       <td>1974</td>
+      <td>1309</td>
       <td>6</td>
+      <td>1</td>
       <td>3</td>
       <td>2006</td>
       <td>1</td>
       <td>1</td>
-      <td>1</td>
-      <td>1999</td>
       <td>6</td>
+      <td>1999</td>
       <td>5</td>
     </tr>
     <tr>
@@ -405,17 +406,17 @@ pd.DataFrame(
       <td>NaN</td>
       <td>60</td>
       <td>Pave</td>
-      <td>1258</td>
       <td>9060</td>
       <td>1939</td>
+      <td>1258</td>
       <td>6</td>
+      <td>1</td>
       <td>2</td>
       <td>2009</td>
-      <td>10</td>
-      <td>1</td>
       <td>0</td>
-      <td>1950</td>
+      <td>10</td>
       <td>5</td>
+      <td>1950</td>
       <td>6</td>
     </tr>
     <tr>
@@ -423,17 +424,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>NaN</td>
       <td>Pave</td>
-      <td>1422</td>
       <td>12342</td>
       <td>1960</td>
+      <td>1422</td>
       <td>5</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>8</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1978</td>
       <td>5</td>
+      <td>1978</td>
       <td>6</td>
     </tr>
     <tr>
@@ -441,17 +442,17 @@ pd.DataFrame(
       <td>NaN</td>
       <td>75</td>
       <td>Pave</td>
-      <td>1442</td>
       <td>9750</td>
       <td>1958</td>
+      <td>1442</td>
       <td>6</td>
+      <td>1</td>
       <td>4</td>
       <td>2007</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1958</td>
+      <td>4</td>
       <td>6</td>
+      <td>1958</td>
       <td>7</td>
     </tr>
     <tr>
@@ -477,17 +478,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1314</td>
       <td>9317</td>
       <td>2006</td>
+      <td>1314</td>
       <td>6</td>
+      <td>2</td>
       <td>3</td>
       <td>2007</td>
-      <td>3</td>
-      <td>2</td>
       <td>1</td>
-      <td>2006</td>
+      <td>3</td>
       <td>5</td>
+      <td>2006</td>
       <td>6</td>
     </tr>
     <tr>
@@ -495,17 +496,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>65</td>
       <td>Pave</td>
-      <td>1981</td>
       <td>7804</td>
       <td>1928</td>
+      <td>1981</td>
       <td>4</td>
+      <td>2</td>
       <td>4</td>
       <td>2009</td>
+      <td>2</td>
       <td>12</td>
-      <td>2</td>
-      <td>2</td>
-      <td>1950</td>
       <td>3</td>
+      <td>1950</td>
       <td>7</td>
     </tr>
     <tr>
@@ -513,17 +514,17 @@ pd.DataFrame(
       <td>NaN</td>
       <td>60</td>
       <td>Pave</td>
-      <td>864</td>
       <td>8172</td>
       <td>1955</td>
+      <td>864</td>
       <td>5</td>
+      <td>1</td>
       <td>2</td>
       <td>2006</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1990</td>
+      <td>4</td>
       <td>7</td>
+      <td>1990</td>
       <td>5</td>
     </tr>
     <tr>
@@ -531,17 +532,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>55</td>
       <td>Pave</td>
-      <td>1426</td>
       <td>7642</td>
       <td>1918</td>
+      <td>1426</td>
       <td>7</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>6</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1998</td>
       <td>8</td>
+      <td>1998</td>
       <td>7</td>
     </tr>
     <tr>
@@ -549,17 +550,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>53</td>
       <td>Pave</td>
-      <td>1555</td>
       <td>3684</td>
       <td>2007</td>
+      <td>1555</td>
       <td>7</td>
       <td>2</td>
-      <td>2009</td>
-      <td>6</td>
       <td>2</td>
+      <td>2009</td>
       <td>1</td>
-      <td>2007</td>
+      <td>6</td>
       <td>5</td>
+      <td>2007</td>
       <td>7</td>
     </tr>
   </tbody>
@@ -585,27 +586,27 @@ pipe
 
 
 
-<style>div.sk-top-container {color: black;background-color: white;}div.sk-toggleable {background-color: white;}label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.2em 0.3em;box-sizing: border-box;text-align: center;}div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}div.sk-estimator {font-family: monospace;background-color: #f0f8ff;margin: 0.25em 0.25em;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;}div.sk-estimator:hover {background-color: #d4ebff;}div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 2em;bottom: 0;left: 50%;}div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;}div.sk-item {z-index: 1;}div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;}div.sk-parallel-item {display: flex;flex-direction: column;position: relative;background-color: white;}div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}div.sk-parallel-item:only-child::after {width: 0;}div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0.2em;box-sizing: border-box;padding-bottom: 0.1em;background-color: white;position: relative;}div.sk-label label {font-family: monospace;font-weight: bold;background-color: white;display: inline-block;line-height: 1.2em;}div.sk-label-container {position: relative;z-index: 2;text-align: center;}div.sk-container {display: inline-block;position: relative;}</style><div class="sk-top-container"><div class="sk-container"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="54876c15-248f-47ab-b389-72744fca87b0" type="checkbox" ><label class="sk-toggleable__label" for="54876c15-248f-47ab-b389-72744fca87b0">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('relevant_cols',
+<style>div.sk-top-container {color: black;background-color: white;}div.sk-toggleable {background-color: white;}label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.2em 0.3em;box-sizing: border-box;text-align: center;}div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}div.sk-estimator {font-family: monospace;background-color: #f0f8ff;margin: 0.25em 0.25em;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;}div.sk-estimator:hover {background-color: #d4ebff;}div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 2em;bottom: 0;left: 50%;}div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;}div.sk-item {z-index: 1;}div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;}div.sk-parallel-item {display: flex;flex-direction: column;position: relative;background-color: white;}div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}div.sk-parallel-item:only-child::after {width: 0;}div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0.2em;box-sizing: border-box;padding-bottom: 0.1em;background-color: white;position: relative;}div.sk-label label {font-family: monospace;font-weight: bold;background-color: white;display: inline-block;line-height: 1.2em;}div.sk-label-container {position: relative;z-index: 2;text-align: center;}div.sk-container {display: inline-block;position: relative;}</style><div class="sk-top-container"><div class="sk-container"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="e4b8df00-7d6a-403a-b492-2a6678bcb49d" type="checkbox" ><label class="sk-toggleable__label" for="e4b8df00-7d6a-403a-b492-2a6678bcb49d">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('relevant_cols',
                  ColumnTransformer(transformers=[('preprocess',
                                                   FunctionTransformer(),
                                                   ['FireplaceQu', 'LotFrontage',
-                                                   'Street', 'GrLivArea',
-                                                   'LotArea', 'YearBuilt',
+                                                   'Street', 'LotArea',
+                                                   'YearBuilt', 'GrLivArea',
                                                    'OverallQual']),
                                                  ('passthrough',
                                                   FunctionTransformer(),
-                                                  ['BedroomAbvGr', 'YrSold',
-                                                   'MoSold', 'FullBath',
-                                                   'Fireplaces', 'YearRemodAdd',
-                                                   'OverallCond',
-                                                   'TotRmsAbvGrd'])]))])</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="ba5bf042-71ac-4991-8a8a-e5a7aa072d47" type="checkbox" ><label class="sk-toggleable__label" for="ba5bf042-71ac-4991-8a8a-e5a7aa072d47">relevant_cols: ColumnTransformer</label><div class="sk-toggleable__content"><pre>ColumnTransformer(transformers=[('preprocess', FunctionTransformer(),
+                                                  ['FullBath', 'BedroomAbvGr',
+                                                   'YrSold', 'Fireplaces',
+                                                   'MoSold', 'OverallCond',
+                                                   'YearRemodAdd',
+                                                   'TotRmsAbvGrd'])]))])</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="1ece4410-0b57-431d-a4f1-bf11183f3c78" type="checkbox" ><label class="sk-toggleable__label" for="1ece4410-0b57-431d-a4f1-bf11183f3c78">relevant_cols: ColumnTransformer</label><div class="sk-toggleable__content"><pre>ColumnTransformer(transformers=[('preprocess', FunctionTransformer(),
                                  ['FireplaceQu', 'LotFrontage', 'Street',
-                                  'GrLivArea', 'LotArea', 'YearBuilt',
+                                  'LotArea', 'YearBuilt', 'GrLivArea',
                                   'OverallQual']),
                                 ('passthrough', FunctionTransformer(),
-                                 ['BedroomAbvGr', 'YrSold', 'MoSold',
-                                  'FullBath', 'Fireplaces', 'YearRemodAdd',
-                                  'OverallCond', 'TotRmsAbvGrd'])])</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="620ceb36-c0e4-4f16-9910-4fa4bbf278a4" type="checkbox" ><label class="sk-toggleable__label" for="620ceb36-c0e4-4f16-9910-4fa4bbf278a4">preprocess</label><div class="sk-toggleable__content"><pre>['FireplaceQu', 'LotFrontage', 'Street', 'GrLivArea', 'LotArea', 'YearBuilt', 'OverallQual']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="79e6e112-bcd5-49ee-9fe0-66c7e2f446d5" type="checkbox" ><label class="sk-toggleable__label" for="79e6e112-bcd5-49ee-9fe0-66c7e2f446d5">FunctionTransformer</label><div class="sk-toggleable__content"><pre>FunctionTransformer()</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="da2c96c5-c777-4d2b-8939-62618ae0308e" type="checkbox" ><label class="sk-toggleable__label" for="da2c96c5-c777-4d2b-8939-62618ae0308e">passthrough</label><div class="sk-toggleable__content"><pre>['BedroomAbvGr', 'YrSold', 'MoSold', 'FullBath', 'Fireplaces', 'YearRemodAdd', 'OverallCond', 'TotRmsAbvGrd']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="20901918-f798-4e9d-86a9-b68297a76986" type="checkbox" ><label class="sk-toggleable__label" for="20901918-f798-4e9d-86a9-b68297a76986">FunctionTransformer</label><div class="sk-toggleable__content"><pre>FunctionTransformer()</pre></div></div></div></div></div></div></div></div></div></div></div></div>
+                                 ['FullBath', 'BedroomAbvGr', 'YrSold',
+                                  'Fireplaces', 'MoSold', 'OverallCond',
+                                  'YearRemodAdd', 'TotRmsAbvGrd'])])</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="4732e028-0797-4584-95ac-66c87e7e6bdf" type="checkbox" ><label class="sk-toggleable__label" for="4732e028-0797-4584-95ac-66c87e7e6bdf">preprocess</label><div class="sk-toggleable__content"><pre>['FireplaceQu', 'LotFrontage', 'Street', 'LotArea', 'YearBuilt', 'GrLivArea', 'OverallQual']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="4e08e36c-b74b-4073-8d0c-adde05d3a4e6" type="checkbox" ><label class="sk-toggleable__label" for="4e08e36c-b74b-4073-8d0c-adde05d3a4e6">FunctionTransformer</label><div class="sk-toggleable__content"><pre>FunctionTransformer()</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="062a92e3-d44a-411a-9f70-4c4c665137a6" type="checkbox" ><label class="sk-toggleable__label" for="062a92e3-d44a-411a-9f70-4c4c665137a6">passthrough</label><div class="sk-toggleable__content"><pre>['FullBath', 'BedroomAbvGr', 'YrSold', 'Fireplaces', 'MoSold', 'OverallCond', 'YearRemodAdd', 'TotRmsAbvGrd']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="266297e2-926f-4451-a716-a190e65dfe87" type="checkbox" ><label class="sk-toggleable__label" for="266297e2-926f-4451-a716-a190e65dfe87">FunctionTransformer</label><div class="sk-toggleable__content"><pre>FunctionTransformer()</pre></div></div></div></div></div></div></div></div></div></div></div></div>
 
 
 
@@ -699,17 +700,17 @@ pd.DataFrame(
       <th>FireplaceQu</th>
       <th>LotFrontage</th>
       <th>Street</th>
-      <th>GrLivArea</th>
       <th>LotArea</th>
       <th>YearBuilt</th>
+      <th>GrLivArea</th>
       <th>OverallQual</th>
+      <th>FullBath</th>
       <th>BedroomAbvGr</th>
       <th>YrSold</th>
-      <th>MoSold</th>
-      <th>FullBath</th>
       <th>Fireplaces</th>
-      <th>YearRemodAdd</th>
+      <th>MoSold</th>
       <th>OverallCond</th>
+      <th>YearRemodAdd</th>
       <th>TotRmsAbvGrd</th>
     </tr>
   </thead>
@@ -719,17 +720,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>43</td>
       <td>Pave</td>
-      <td>1504</td>
       <td>3182</td>
       <td>2005</td>
+      <td>1504</td>
       <td>7</td>
       <td>2</td>
-      <td>2008</td>
-      <td>5</td>
       <td>2</td>
+      <td>2008</td>
       <td>1</td>
-      <td>2006</td>
       <td>5</td>
+      <td>5</td>
+      <td>2006</td>
       <td>7</td>
     </tr>
     <tr>
@@ -737,17 +738,17 @@ pd.DataFrame(
       <td>Fa</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1309</td>
       <td>10140</td>
       <td>1974</td>
+      <td>1309</td>
       <td>6</td>
+      <td>1</td>
       <td>3</td>
       <td>2006</td>
       <td>1</td>
       <td>1</td>
-      <td>1</td>
-      <td>1999</td>
       <td>6</td>
+      <td>1999</td>
       <td>5</td>
     </tr>
     <tr>
@@ -755,17 +756,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>1258</td>
       <td>9060</td>
       <td>1939</td>
+      <td>1258</td>
       <td>6</td>
+      <td>1</td>
       <td>2</td>
       <td>2009</td>
-      <td>10</td>
-      <td>1</td>
       <td>0</td>
-      <td>1950</td>
+      <td>10</td>
       <td>5</td>
+      <td>1950</td>
       <td>6</td>
     </tr>
     <tr>
@@ -773,17 +774,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>NaN</td>
       <td>Pave</td>
-      <td>1422</td>
       <td>12342</td>
       <td>1960</td>
+      <td>1422</td>
       <td>5</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>8</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1978</td>
       <td>5</td>
+      <td>1978</td>
       <td>6</td>
     </tr>
     <tr>
@@ -791,17 +792,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>75</td>
       <td>Pave</td>
-      <td>1442</td>
       <td>9750</td>
       <td>1958</td>
+      <td>1442</td>
       <td>6</td>
+      <td>1</td>
       <td>4</td>
       <td>2007</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1958</td>
+      <td>4</td>
       <td>6</td>
+      <td>1958</td>
       <td>7</td>
     </tr>
     <tr>
@@ -827,17 +828,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1314</td>
       <td>9317</td>
       <td>2006</td>
+      <td>1314</td>
       <td>6</td>
+      <td>2</td>
       <td>3</td>
       <td>2007</td>
-      <td>3</td>
-      <td>2</td>
       <td>1</td>
-      <td>2006</td>
+      <td>3</td>
       <td>5</td>
+      <td>2006</td>
       <td>6</td>
     </tr>
     <tr>
@@ -845,17 +846,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>65</td>
       <td>Pave</td>
-      <td>1981</td>
       <td>7804</td>
       <td>1928</td>
+      <td>1981</td>
       <td>4</td>
+      <td>2</td>
       <td>4</td>
       <td>2009</td>
+      <td>2</td>
       <td>12</td>
-      <td>2</td>
-      <td>2</td>
-      <td>1950</td>
       <td>3</td>
+      <td>1950</td>
       <td>7</td>
     </tr>
     <tr>
@@ -863,17 +864,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>864</td>
       <td>8172</td>
       <td>1955</td>
+      <td>864</td>
       <td>5</td>
+      <td>1</td>
       <td>2</td>
       <td>2006</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1990</td>
+      <td>4</td>
       <td>7</td>
+      <td>1990</td>
       <td>5</td>
     </tr>
     <tr>
@@ -881,17 +882,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>55</td>
       <td>Pave</td>
-      <td>1426</td>
       <td>7642</td>
       <td>1918</td>
+      <td>1426</td>
       <td>7</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>6</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1998</td>
       <td>8</td>
+      <td>1998</td>
       <td>7</td>
     </tr>
     <tr>
@@ -899,17 +900,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>53</td>
       <td>Pave</td>
-      <td>1555</td>
       <td>3684</td>
       <td>2007</td>
+      <td>1555</td>
       <td>7</td>
       <td>2</td>
-      <td>2009</td>
-      <td>6</td>
       <td>2</td>
+      <td>2009</td>
       <td>1</td>
-      <td>2007</td>
+      <td>6</td>
       <td>5</td>
+      <td>2007</td>
       <td>7</td>
     </tr>
   </tbody>
@@ -931,7 +932,7 @@ pipe
 
 
 
-<style>div.sk-top-container {color: black;background-color: white;}div.sk-toggleable {background-color: white;}label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.2em 0.3em;box-sizing: border-box;text-align: center;}div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}div.sk-estimator {font-family: monospace;background-color: #f0f8ff;margin: 0.25em 0.25em;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;}div.sk-estimator:hover {background-color: #d4ebff;}div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 2em;bottom: 0;left: 50%;}div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;}div.sk-item {z-index: 1;}div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;}div.sk-parallel-item {display: flex;flex-direction: column;position: relative;background-color: white;}div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}div.sk-parallel-item:only-child::after {width: 0;}div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0.2em;box-sizing: border-box;padding-bottom: 0.1em;background-color: white;position: relative;}div.sk-label label {font-family: monospace;font-weight: bold;background-color: white;display: inline-block;line-height: 1.2em;}div.sk-label-container {position: relative;z-index: 2;text-align: center;}div.sk-container {display: inline-block;position: relative;}</style><div class="sk-top-container"><div class="sk-container"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="440d2909-4886-442b-8f5f-43b0463bfcb4" type="checkbox" ><label class="sk-toggleable__label" for="440d2909-4886-442b-8f5f-43b0463bfcb4">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('relevant_cols',
+<style>div.sk-top-container {color: black;background-color: white;}div.sk-toggleable {background-color: white;}label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.2em 0.3em;box-sizing: border-box;text-align: center;}div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}div.sk-estimator {font-family: monospace;background-color: #f0f8ff;margin: 0.25em 0.25em;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;}div.sk-estimator:hover {background-color: #d4ebff;}div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 2em;bottom: 0;left: 50%;}div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;}div.sk-item {z-index: 1;}div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;}div.sk-parallel-item {display: flex;flex-direction: column;position: relative;background-color: white;}div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}div.sk-parallel-item:only-child::after {width: 0;}div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0.2em;box-sizing: border-box;padding-bottom: 0.1em;background-color: white;position: relative;}div.sk-label label {font-family: monospace;font-weight: bold;background-color: white;display: inline-block;line-height: 1.2em;}div.sk-label-container {position: relative;z-index: 2;text-align: center;}div.sk-container {display: inline-block;position: relative;}</style><div class="sk-top-container"><div class="sk-container"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="e4c961a5-0179-496e-a5c5-fd81a775f847" type="checkbox" ><label class="sk-toggleable__label" for="e4c961a5-0179-496e-a5c5-fd81a775f847">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('relevant_cols',
                  ColumnTransformer(transformers=[('preprocess',
                                                   ColumnTransformer(remainder='passthrough',
                                                                     transformers=[('fireplace_qu',
@@ -940,16 +941,16 @@ pipe
                                                                                                                   strategy='constant'))]),
                                                                                    ['FireplaceQu'])]),
                                                   ['FireplaceQu', 'LotFrontage',
-                                                   'Street', 'GrLivArea',
-                                                   'LotArea', 'YearBuilt',
+                                                   'Street', 'LotArea',
+                                                   'YearBuilt', 'GrLivArea',
                                                    'OverallQual']),
                                                  ('passthrough',
                                                   FunctionTransformer(),
-                                                  ['BedroomAbvGr', 'YrSold',
-                                                   'MoSold', 'FullBath',
-                                                   'Fireplaces', 'YearRemodAdd',
-                                                   'OverallCond',
-                                                   'TotRmsAbvGrd'])]))])</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="c522bbb9-7d9b-41f2-85ef-ad350ee54ade" type="checkbox" ><label class="sk-toggleable__label" for="c522bbb9-7d9b-41f2-85ef-ad350ee54ade">relevant_cols: ColumnTransformer</label><div class="sk-toggleable__content"><pre>ColumnTransformer(transformers=[('preprocess',
+                                                  ['FullBath', 'BedroomAbvGr',
+                                                   'YrSold', 'Fireplaces',
+                                                   'MoSold', 'OverallCond',
+                                                   'YearRemodAdd',
+                                                   'TotRmsAbvGrd'])]))])</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="5c930326-8ee9-4589-8de7-d6ec35ab8f4f" type="checkbox" ><label class="sk-toggleable__label" for="5c930326-8ee9-4589-8de7-d6ec35ab8f4f">relevant_cols: ColumnTransformer</label><div class="sk-toggleable__content"><pre>ColumnTransformer(transformers=[('preprocess',
                                  ColumnTransformer(remainder='passthrough',
                                                    transformers=[('fireplace_qu',
                                                                   Pipeline(steps=[('impute',
@@ -957,12 +958,12 @@ pipe
                                                                                                  strategy='constant'))]),
                                                                   ['FireplaceQu'])]),
                                  ['FireplaceQu', 'LotFrontage', 'Street',
-                                  'GrLivArea', 'LotArea', 'YearBuilt',
+                                  'LotArea', 'YearBuilt', 'GrLivArea',
                                   'OverallQual']),
                                 ('passthrough', FunctionTransformer(),
-                                 ['BedroomAbvGr', 'YrSold', 'MoSold',
-                                  'FullBath', 'Fireplaces', 'YearRemodAdd',
-                                  'OverallCond', 'TotRmsAbvGrd'])])</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="97f305df-15fa-4879-968d-bf43310ba04c" type="checkbox" ><label class="sk-toggleable__label" for="97f305df-15fa-4879-968d-bf43310ba04c">preprocess</label><div class="sk-toggleable__content"><pre>['FireplaceQu', 'LotFrontage', 'Street', 'GrLivArea', 'LotArea', 'YearBuilt', 'OverallQual']</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="fa30a4a2-f1cb-4965-9948-5902c65bfde3" type="checkbox" ><label class="sk-toggleable__label" for="fa30a4a2-f1cb-4965-9948-5902c65bfde3">fireplace_qu</label><div class="sk-toggleable__content"><pre>['FireplaceQu']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="996edf20-0bee-498a-baed-e6c1e2fbfb94" type="checkbox" ><label class="sk-toggleable__label" for="996edf20-0bee-498a-baed-e6c1e2fbfb94">SimpleImputer</label><div class="sk-toggleable__content"><pre>SimpleImputer(fill_value='N/A', strategy='constant')</pre></div></div></div></div></div></div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="f26b5ffb-05ef-4807-934f-1ccb2acdf355" type="checkbox" ><label class="sk-toggleable__label" for="f26b5ffb-05ef-4807-934f-1ccb2acdf355">passthrough</label><div class="sk-toggleable__content"><pre>['BedroomAbvGr', 'YrSold', 'MoSold', 'FullBath', 'Fireplaces', 'YearRemodAdd', 'OverallCond', 'TotRmsAbvGrd']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="2599237c-6d36-4b48-8d50-a76914846e03" type="checkbox" ><label class="sk-toggleable__label" for="2599237c-6d36-4b48-8d50-a76914846e03">FunctionTransformer</label><div class="sk-toggleable__content"><pre>FunctionTransformer()</pre></div></div></div></div></div></div></div></div></div></div></div></div>
+                                 ['FullBath', 'BedroomAbvGr', 'YrSold',
+                                  'Fireplaces', 'MoSold', 'OverallCond',
+                                  'YearRemodAdd', 'TotRmsAbvGrd'])])</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="fc1dc4d8-7cbc-4be7-ada2-4d0c17c06514" type="checkbox" ><label class="sk-toggleable__label" for="fc1dc4d8-7cbc-4be7-ada2-4d0c17c06514">preprocess</label><div class="sk-toggleable__content"><pre>['FireplaceQu', 'LotFrontage', 'Street', 'LotArea', 'YearBuilt', 'GrLivArea', 'OverallQual']</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="a5ab75c8-05ab-497a-a48f-0aeffe2924de" type="checkbox" ><label class="sk-toggleable__label" for="a5ab75c8-05ab-497a-a48f-0aeffe2924de">fireplace_qu</label><div class="sk-toggleable__content"><pre>['FireplaceQu']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="7be7a270-d76b-4d05-9f62-8a74147b7a30" type="checkbox" ><label class="sk-toggleable__label" for="7be7a270-d76b-4d05-9f62-8a74147b7a30">SimpleImputer</label><div class="sk-toggleable__content"><pre>SimpleImputer(fill_value='N/A', strategy='constant')</pre></div></div></div></div></div></div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="9b9772a4-eaa9-47ae-91e5-2063da1947b1" type="checkbox" ><label class="sk-toggleable__label" for="9b9772a4-eaa9-47ae-91e5-2063da1947b1">passthrough</label><div class="sk-toggleable__content"><pre>['FullBath', 'BedroomAbvGr', 'YrSold', 'Fireplaces', 'MoSold', 'OverallCond', 'YearRemodAdd', 'TotRmsAbvGrd']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="cf23b6a3-3605-4d8e-b0f6-9b60f425abee" type="checkbox" ><label class="sk-toggleable__label" for="cf23b6a3-3605-4d8e-b0f6-9b60f425abee">FunctionTransformer</label><div class="sk-toggleable__content"><pre>FunctionTransformer()</pre></div></div></div></div></div></div></div></div></div></div></div></div>
 
 
 
@@ -1039,17 +1040,17 @@ pd.DataFrame(
       <th>FireplaceQu</th>
       <th>LotFrontage</th>
       <th>Street</th>
-      <th>GrLivArea</th>
       <th>LotArea</th>
       <th>YearBuilt</th>
+      <th>GrLivArea</th>
       <th>OverallQual</th>
+      <th>FullBath</th>
       <th>BedroomAbvGr</th>
       <th>YrSold</th>
-      <th>MoSold</th>
-      <th>FullBath</th>
       <th>Fireplaces</th>
-      <th>YearRemodAdd</th>
+      <th>MoSold</th>
       <th>OverallCond</th>
+      <th>YearRemodAdd</th>
       <th>TotRmsAbvGrd</th>
     </tr>
   </thead>
@@ -1059,17 +1060,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>43</td>
       <td>Pave</td>
-      <td>1504</td>
       <td>3182</td>
       <td>2005</td>
+      <td>1504</td>
       <td>7</td>
       <td>2</td>
-      <td>2008</td>
-      <td>5</td>
       <td>2</td>
+      <td>2008</td>
       <td>1</td>
-      <td>2006</td>
       <td>5</td>
+      <td>5</td>
+      <td>2006</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1077,17 +1078,17 @@ pd.DataFrame(
       <td>Fa</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1309</td>
       <td>10140</td>
       <td>1974</td>
+      <td>1309</td>
       <td>6</td>
+      <td>1</td>
       <td>3</td>
       <td>2006</td>
       <td>1</td>
       <td>1</td>
-      <td>1</td>
-      <td>1999</td>
       <td>6</td>
+      <td>1999</td>
       <td>5</td>
     </tr>
     <tr>
@@ -1095,17 +1096,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>1258</td>
       <td>9060</td>
       <td>1939</td>
+      <td>1258</td>
       <td>6</td>
+      <td>1</td>
       <td>2</td>
       <td>2009</td>
-      <td>10</td>
-      <td>1</td>
       <td>0</td>
-      <td>1950</td>
+      <td>10</td>
       <td>5</td>
+      <td>1950</td>
       <td>6</td>
     </tr>
     <tr>
@@ -1113,17 +1114,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>70</td>
       <td>Pave</td>
-      <td>1422</td>
       <td>12342</td>
       <td>1960</td>
+      <td>1422</td>
       <td>5</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>8</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1978</td>
       <td>5</td>
+      <td>1978</td>
       <td>6</td>
     </tr>
     <tr>
@@ -1131,17 +1132,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>75</td>
       <td>Pave</td>
-      <td>1442</td>
       <td>9750</td>
       <td>1958</td>
+      <td>1442</td>
       <td>6</td>
+      <td>1</td>
       <td>4</td>
       <td>2007</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1958</td>
+      <td>4</td>
       <td>6</td>
+      <td>1958</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1167,17 +1168,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1314</td>
       <td>9317</td>
       <td>2006</td>
+      <td>1314</td>
       <td>6</td>
+      <td>2</td>
       <td>3</td>
       <td>2007</td>
-      <td>3</td>
-      <td>2</td>
       <td>1</td>
-      <td>2006</td>
+      <td>3</td>
       <td>5</td>
+      <td>2006</td>
       <td>6</td>
     </tr>
     <tr>
@@ -1185,17 +1186,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>65</td>
       <td>Pave</td>
-      <td>1981</td>
       <td>7804</td>
       <td>1928</td>
+      <td>1981</td>
       <td>4</td>
+      <td>2</td>
       <td>4</td>
       <td>2009</td>
+      <td>2</td>
       <td>12</td>
-      <td>2</td>
-      <td>2</td>
-      <td>1950</td>
       <td>3</td>
+      <td>1950</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1203,17 +1204,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>864</td>
       <td>8172</td>
       <td>1955</td>
+      <td>864</td>
       <td>5</td>
+      <td>1</td>
       <td>2</td>
       <td>2006</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1990</td>
+      <td>4</td>
       <td>7</td>
+      <td>1990</td>
       <td>5</td>
     </tr>
     <tr>
@@ -1221,17 +1222,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>55</td>
       <td>Pave</td>
-      <td>1426</td>
       <td>7642</td>
       <td>1918</td>
+      <td>1426</td>
       <td>7</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>6</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1998</td>
       <td>8</td>
+      <td>1998</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1239,17 +1240,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>53</td>
       <td>Pave</td>
-      <td>1555</td>
       <td>3684</td>
       <td>2007</td>
+      <td>1555</td>
       <td>7</td>
       <td>2</td>
-      <td>2009</td>
-      <td>6</td>
       <td>2</td>
+      <td>2009</td>
       <td>1</td>
-      <td>2007</td>
+      <td>6</td>
       <td>5</td>
+      <td>2007</td>
       <td>7</td>
     </tr>
   </tbody>
@@ -1261,9 +1262,9 @@ pd.DataFrame(
 
 #### Adding a Missing Indicator
 
-If you recall from the previous lesson, a `FeatureUnion` is useful when you want to combine engineered features with original (but preprocessed) features.
+Recall from the previous lesson that a `FeatureUnion` is useful when you want to combine engineered features with original (but preprocessed) features.
 
-In this case, we are treating a `MissingIndicator` as an engineered feature, which should appear as the last column in our `X` data regardless of whether there are actually any missing values in `LotFrontage`.
+In this case, we are treating a `MissingIndicator` as an engineered feature, which should appear as the last column in our `X` data regardless of whether there are actually any missing values in `LotFrontage`. (In other words, even if every value of `LotFrontage` is present and every value in the new column is therefore identical. This is why we will specify `features="all"` when creating the `MissingIndicator`.)
 
 First, let's refactor our entire pipeline so far, so that it uses a `FeatureUnion`:
 
@@ -1336,17 +1337,17 @@ pd.DataFrame(
       <th>FireplaceQu</th>
       <th>LotFrontage</th>
       <th>Street</th>
-      <th>GrLivArea</th>
       <th>LotArea</th>
       <th>YearBuilt</th>
+      <th>GrLivArea</th>
       <th>OverallQual</th>
+      <th>FullBath</th>
       <th>BedroomAbvGr</th>
       <th>YrSold</th>
-      <th>MoSold</th>
-      <th>FullBath</th>
       <th>Fireplaces</th>
-      <th>YearRemodAdd</th>
+      <th>MoSold</th>
       <th>OverallCond</th>
+      <th>YearRemodAdd</th>
       <th>TotRmsAbvGrd</th>
     </tr>
   </thead>
@@ -1356,17 +1357,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>43</td>
       <td>Pave</td>
-      <td>1504</td>
       <td>3182</td>
       <td>2005</td>
+      <td>1504</td>
       <td>7</td>
       <td>2</td>
-      <td>2008</td>
-      <td>5</td>
       <td>2</td>
+      <td>2008</td>
       <td>1</td>
-      <td>2006</td>
       <td>5</td>
+      <td>5</td>
+      <td>2006</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1374,17 +1375,17 @@ pd.DataFrame(
       <td>Fa</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1309</td>
       <td>10140</td>
       <td>1974</td>
+      <td>1309</td>
       <td>6</td>
+      <td>1</td>
       <td>3</td>
       <td>2006</td>
       <td>1</td>
       <td>1</td>
-      <td>1</td>
-      <td>1999</td>
       <td>6</td>
+      <td>1999</td>
       <td>5</td>
     </tr>
     <tr>
@@ -1392,17 +1393,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>1258</td>
       <td>9060</td>
       <td>1939</td>
+      <td>1258</td>
       <td>6</td>
+      <td>1</td>
       <td>2</td>
       <td>2009</td>
-      <td>10</td>
-      <td>1</td>
       <td>0</td>
-      <td>1950</td>
+      <td>10</td>
       <td>5</td>
+      <td>1950</td>
       <td>6</td>
     </tr>
     <tr>
@@ -1410,17 +1411,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>70</td>
       <td>Pave</td>
-      <td>1422</td>
       <td>12342</td>
       <td>1960</td>
+      <td>1422</td>
       <td>5</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>8</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1978</td>
       <td>5</td>
+      <td>1978</td>
       <td>6</td>
     </tr>
     <tr>
@@ -1428,17 +1429,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>75</td>
       <td>Pave</td>
-      <td>1442</td>
       <td>9750</td>
       <td>1958</td>
+      <td>1442</td>
       <td>6</td>
+      <td>1</td>
       <td>4</td>
       <td>2007</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1958</td>
+      <td>4</td>
       <td>6</td>
+      <td>1958</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1464,17 +1465,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1314</td>
       <td>9317</td>
       <td>2006</td>
+      <td>1314</td>
       <td>6</td>
+      <td>2</td>
       <td>3</td>
       <td>2007</td>
-      <td>3</td>
-      <td>2</td>
       <td>1</td>
-      <td>2006</td>
+      <td>3</td>
       <td>5</td>
+      <td>2006</td>
       <td>6</td>
     </tr>
     <tr>
@@ -1482,17 +1483,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>65</td>
       <td>Pave</td>
-      <td>1981</td>
       <td>7804</td>
       <td>1928</td>
+      <td>1981</td>
       <td>4</td>
+      <td>2</td>
       <td>4</td>
       <td>2009</td>
+      <td>2</td>
       <td>12</td>
-      <td>2</td>
-      <td>2</td>
-      <td>1950</td>
       <td>3</td>
+      <td>1950</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1500,17 +1501,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>864</td>
       <td>8172</td>
       <td>1955</td>
+      <td>864</td>
       <td>5</td>
+      <td>1</td>
       <td>2</td>
       <td>2006</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1990</td>
+      <td>4</td>
       <td>7</td>
+      <td>1990</td>
       <td>5</td>
     </tr>
     <tr>
@@ -1518,17 +1519,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>55</td>
       <td>Pave</td>
-      <td>1426</td>
       <td>7642</td>
       <td>1918</td>
+      <td>1426</td>
       <td>7</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>6</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1998</td>
       <td>8</td>
+      <td>1998</td>
       <td>7</td>
     </tr>
     <tr>
@@ -1536,17 +1537,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>53</td>
       <td>Pave</td>
-      <td>1555</td>
       <td>3684</td>
       <td>2007</td>
+      <td>1555</td>
       <td>7</td>
       <td>2</td>
-      <td>2009</td>
-      <td>6</td>
       <td>2</td>
+      <td>2009</td>
       <td>1</td>
-      <td>2007</td>
+      <td>6</td>
       <td>5</td>
+      <td>2007</td>
       <td>7</td>
     </tr>
   </tbody>
@@ -1555,6 +1556,8 @@ pd.DataFrame(
 </div>
 
 
+
+(The output above should be identical to the previous output; all we have done is changed the structure of the code somewhat.)
 
 Now we can add another item to the `FeatureUnion`!
 
@@ -1611,17 +1614,17 @@ pd.DataFrame(
       <th>FireplaceQu</th>
       <th>LotFrontage</th>
       <th>Street</th>
-      <th>GrLivArea</th>
       <th>LotArea</th>
       <th>YearBuilt</th>
+      <th>GrLivArea</th>
       <th>OverallQual</th>
+      <th>FullBath</th>
       <th>BedroomAbvGr</th>
       <th>YrSold</th>
-      <th>MoSold</th>
-      <th>FullBath</th>
       <th>Fireplaces</th>
-      <th>YearRemodAdd</th>
+      <th>MoSold</th>
       <th>OverallCond</th>
+      <th>YearRemodAdd</th>
       <th>TotRmsAbvGrd</th>
       <th>LotFrontage_Missing</th>
     </tr>
@@ -1632,17 +1635,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>43</td>
       <td>Pave</td>
-      <td>1504</td>
       <td>3182</td>
       <td>2005</td>
+      <td>1504</td>
       <td>7</td>
       <td>2</td>
-      <td>2008</td>
-      <td>5</td>
       <td>2</td>
+      <td>2008</td>
       <td>1</td>
-      <td>2006</td>
       <td>5</td>
+      <td>5</td>
+      <td>2006</td>
       <td>7</td>
       <td>False</td>
     </tr>
@@ -1651,17 +1654,17 @@ pd.DataFrame(
       <td>Fa</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1309</td>
       <td>10140</td>
       <td>1974</td>
+      <td>1309</td>
       <td>6</td>
+      <td>1</td>
       <td>3</td>
       <td>2006</td>
       <td>1</td>
       <td>1</td>
-      <td>1</td>
-      <td>1999</td>
       <td>6</td>
+      <td>1999</td>
       <td>5</td>
       <td>False</td>
     </tr>
@@ -1670,17 +1673,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>1258</td>
       <td>9060</td>
       <td>1939</td>
+      <td>1258</td>
       <td>6</td>
+      <td>1</td>
       <td>2</td>
       <td>2009</td>
-      <td>10</td>
-      <td>1</td>
       <td>0</td>
-      <td>1950</td>
+      <td>10</td>
       <td>5</td>
+      <td>1950</td>
       <td>6</td>
       <td>False</td>
     </tr>
@@ -1689,17 +1692,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>70</td>
       <td>Pave</td>
-      <td>1422</td>
       <td>12342</td>
       <td>1960</td>
+      <td>1422</td>
       <td>5</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>8</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1978</td>
       <td>5</td>
+      <td>1978</td>
       <td>6</td>
       <td>True</td>
     </tr>
@@ -1708,17 +1711,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>75</td>
       <td>Pave</td>
-      <td>1442</td>
       <td>9750</td>
       <td>1958</td>
+      <td>1442</td>
       <td>6</td>
+      <td>1</td>
       <td>4</td>
       <td>2007</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1958</td>
+      <td>4</td>
       <td>6</td>
+      <td>1958</td>
       <td>7</td>
       <td>False</td>
     </tr>
@@ -1746,17 +1749,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>78</td>
       <td>Pave</td>
-      <td>1314</td>
       <td>9317</td>
       <td>2006</td>
+      <td>1314</td>
       <td>6</td>
+      <td>2</td>
       <td>3</td>
       <td>2007</td>
-      <td>3</td>
-      <td>2</td>
       <td>1</td>
-      <td>2006</td>
+      <td>3</td>
       <td>5</td>
+      <td>2006</td>
       <td>6</td>
       <td>False</td>
     </tr>
@@ -1765,17 +1768,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>65</td>
       <td>Pave</td>
-      <td>1981</td>
       <td>7804</td>
       <td>1928</td>
+      <td>1981</td>
       <td>4</td>
+      <td>2</td>
       <td>4</td>
       <td>2009</td>
+      <td>2</td>
       <td>12</td>
-      <td>2</td>
-      <td>2</td>
-      <td>1950</td>
       <td>3</td>
+      <td>1950</td>
       <td>7</td>
       <td>False</td>
     </tr>
@@ -1784,17 +1787,17 @@ pd.DataFrame(
       <td>N/A</td>
       <td>60</td>
       <td>Pave</td>
-      <td>864</td>
       <td>8172</td>
       <td>1955</td>
+      <td>864</td>
       <td>5</td>
+      <td>1</td>
       <td>2</td>
       <td>2006</td>
-      <td>4</td>
-      <td>1</td>
       <td>0</td>
-      <td>1990</td>
+      <td>4</td>
       <td>7</td>
+      <td>1990</td>
       <td>5</td>
       <td>False</td>
     </tr>
@@ -1803,17 +1806,17 @@ pd.DataFrame(
       <td>Gd</td>
       <td>55</td>
       <td>Pave</td>
-      <td>1426</td>
       <td>7642</td>
       <td>1918</td>
+      <td>1426</td>
       <td>7</td>
+      <td>1</td>
       <td>3</td>
       <td>2007</td>
+      <td>1</td>
       <td>6</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1998</td>
       <td>8</td>
+      <td>1998</td>
       <td>7</td>
       <td>False</td>
     </tr>
@@ -1822,17 +1825,17 @@ pd.DataFrame(
       <td>TA</td>
       <td>53</td>
       <td>Pave</td>
-      <td>1555</td>
       <td>3684</td>
       <td>2007</td>
+      <td>1555</td>
       <td>7</td>
       <td>2</td>
-      <td>2009</td>
-      <td>6</td>
       <td>2</td>
+      <td>2009</td>
       <td>1</td>
-      <td>2007</td>
+      <td>6</td>
       <td>5</td>
+      <td>2007</td>
       <td>7</td>
       <td>False</td>
     </tr>
@@ -1844,3 +1847,814 @@ pd.DataFrame(
 
 
 Now we should have a dataframe with 16 columns: our original 15 relevant columns (in various states of preprocessing completion) plus a new engineered column.
+
+### 3. Convert Categorical Features into Numbers
+
+In the initial version of this code, we used `LabelBinarizer` for features with only two categories, and `OneHotEncoder` for features with more than two categories.
+
+`LabelBinarizer` is not designed to work with pipelines, so we'll need a slightly different strategy.
+
+Fortunately, it is possible to use a `OneHotEncoder` to achieve the same outcome as a `LabelBinarizer`: specifically, if we specify `drop="first"`.
+
+(*Why use a `LabelBinarizer` rather than a `OneHotEncoder` at all, then?* Outside of the context of pipelines, the output of a `OneHotEncoder` is more difficult to work with.)
+
+#### `OneHotEncoder` with `drop="first"` for `Street`
+
+Let's start with the `Street` feature. The only thing we need to modify is the `ColumnTransformer` for preprocessed features. In the cell below, replace `None` so that we add a `OneHotEncoder` with `drop="first"` and `categories="auto"`, which applies specifically to the `Street` feature:
+
+
+```python
+
+# ColumnTransformer for columns requiring preprocessing
+preprocess_cols_transformer = ColumnTransformer(transformers=[
+    ("fireplace_qu", fireplace_qu_pipe, ["FireplaceQu"]),
+    ("impute_frontage", SimpleImputer(strategy="median"), ["LotFrontage"]),
+    (
+        "encode_street",
+        OneHotEncoder(categories="auto", drop="first"),
+        ["Street"]
+    )
+], remainder="passthrough")
+```
+
+Now, run the full pipeline below. `Street` should now be encoded as 1s and 0s (although only 1s are visible in this example):
+
+
+```python
+
+# ColumnTransformer for all original features that we want to keep
+relevant_cols_transformer = ColumnTransformer(transformers=[
+    ("preprocess", preprocess_cols_transformer, columns_needing_preprocessing),
+    ("passthrough", FunctionTransformer(), passthrough_columns)
+], remainder="drop")
+
+# Feature union (currently only contains original features)
+feature_union = FeatureUnion(transformer_list=[
+    ("original_features", relevant_cols_transformer),
+    ("engineered_features", feature_eng)
+])
+
+# Pipeline (currently only contains feature union)
+pipe = Pipeline(steps=[
+    ("all_features", feature_union)
+])
+pipe.fit_transform(X_train)
+
+# Transform X_train and create dataframe for readability
+X_train_transformed = pipe.fit_transform(X_train)
+pd.DataFrame(
+    X_train_transformed,
+    columns=columns_needing_preprocessing + passthrough_columns + ["LotFrontage_Missing"]
+)
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>FireplaceQu</th>
+      <th>LotFrontage</th>
+      <th>Street</th>
+      <th>LotArea</th>
+      <th>YearBuilt</th>
+      <th>GrLivArea</th>
+      <th>OverallQual</th>
+      <th>FullBath</th>
+      <th>BedroomAbvGr</th>
+      <th>YrSold</th>
+      <th>Fireplaces</th>
+      <th>MoSold</th>
+      <th>OverallCond</th>
+      <th>YearRemodAdd</th>
+      <th>TotRmsAbvGrd</th>
+      <th>LotFrontage_Missing</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Gd</td>
+      <td>43</td>
+      <td>1</td>
+      <td>3182</td>
+      <td>2005</td>
+      <td>1504</td>
+      <td>7</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2008</td>
+      <td>1</td>
+      <td>5</td>
+      <td>5</td>
+      <td>2006</td>
+      <td>7</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Fa</td>
+      <td>78</td>
+      <td>1</td>
+      <td>10140</td>
+      <td>1974</td>
+      <td>1309</td>
+      <td>6</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2006</td>
+      <td>1</td>
+      <td>1</td>
+      <td>6</td>
+      <td>1999</td>
+      <td>5</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>N/A</td>
+      <td>60</td>
+      <td>1</td>
+      <td>9060</td>
+      <td>1939</td>
+      <td>1258</td>
+      <td>6</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2009</td>
+      <td>0</td>
+      <td>10</td>
+      <td>5</td>
+      <td>1950</td>
+      <td>6</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>TA</td>
+      <td>70</td>
+      <td>1</td>
+      <td>12342</td>
+      <td>1960</td>
+      <td>1422</td>
+      <td>5</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>8</td>
+      <td>5</td>
+      <td>1978</td>
+      <td>6</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>N/A</td>
+      <td>75</td>
+      <td>1</td>
+      <td>9750</td>
+      <td>1958</td>
+      <td>1442</td>
+      <td>6</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2007</td>
+      <td>0</td>
+      <td>4</td>
+      <td>6</td>
+      <td>1958</td>
+      <td>7</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1090</th>
+      <td>Gd</td>
+      <td>78</td>
+      <td>1</td>
+      <td>9317</td>
+      <td>2006</td>
+      <td>1314</td>
+      <td>6</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>3</td>
+      <td>5</td>
+      <td>2006</td>
+      <td>6</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1091</th>
+      <td>TA</td>
+      <td>65</td>
+      <td>1</td>
+      <td>7804</td>
+      <td>1928</td>
+      <td>1981</td>
+      <td>4</td>
+      <td>2</td>
+      <td>4</td>
+      <td>2009</td>
+      <td>2</td>
+      <td>12</td>
+      <td>3</td>
+      <td>1950</td>
+      <td>7</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1092</th>
+      <td>N/A</td>
+      <td>60</td>
+      <td>1</td>
+      <td>8172</td>
+      <td>1955</td>
+      <td>864</td>
+      <td>5</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2006</td>
+      <td>0</td>
+      <td>4</td>
+      <td>7</td>
+      <td>1990</td>
+      <td>5</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1093</th>
+      <td>Gd</td>
+      <td>55</td>
+      <td>1</td>
+      <td>7642</td>
+      <td>1918</td>
+      <td>1426</td>
+      <td>7</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>6</td>
+      <td>8</td>
+      <td>1998</td>
+      <td>7</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1094</th>
+      <td>TA</td>
+      <td>53</td>
+      <td>1</td>
+      <td>3684</td>
+      <td>2007</td>
+      <td>1555</td>
+      <td>7</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2009</td>
+      <td>1</td>
+      <td>6</td>
+      <td>5</td>
+      <td>2007</td>
+      <td>7</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+<p>1095 rows × 16 columns</p>
+</div>
+
+
+
+#### `OneHotEncoder` for `FireplaceQu`
+
+Now we also need to apply a `OneHotEncoder` to the `FireplaceQu` column. In this case we don't need to drop any columns. (We are using a predictive framing here, so we will tolerate multicollinearity for the potential of better prediction results.)
+
+Previously, we made a pipeline to contain the code for `FireplaceQu`:
+
+```python
+fireplace_qu_pipe = Pipeline(steps=[
+    ("impute", SimpleImputer(strategy="constant", fill_value="N/A"))
+])
+```
+
+***Why do we have a pipeline inside of a pipeline?***
+
+As we have said before, a pipeline is useful if we want to perform the exact same steps on all columns. In this case "all columns" just means `FireplaceQu` (because we previously used a `ColumnTransformer`), but if we had multiple features with similar properties (some missing data, more than 2 categories) we could change the `ColumnTransformer` list and then this pipeline would be used for multiple columns.
+
+The reason this needs to be a pipeline and not just two separate tuples within the `ColumnTransformer` is that `OneHotEncoder` will crash if there is any missing data. So we need to run `SimpleImputer` first, then `OneHotEncoder`, and the way to do this is with a pipeline. But because we don't want these steps to apply to every single feature in the dataset, this needs to be a pipeline nested within a `ColumnTransformer` within the larger pipeline.
+
+In the cell below, replace `None` to add a `OneHotEncoder` step to the `fireplace_qu` pipeline:
+
+
+```python
+fireplace_qu_pipe = Pipeline(steps=[
+    ("impute", SimpleImputer(strategy="constant", fill_value="N/A")),
+    (
+        "one_hot_encode",
+        OneHotEncoder(categories="auto", handle_unknown="ignore")
+    )
+])
+```
+
+Test it out here:
+
+
+```python
+
+# ColumnTransformer for columns requiring preprocessing
+preprocess_cols_transformer = ColumnTransformer(transformers=[
+    ("fireplace_qu", fireplace_qu_pipe, ["FireplaceQu"]),
+    ("impute_frontage", SimpleImputer(strategy="median"), ["LotFrontage"]),
+    ("encode_street", OneHotEncoder(categories="auto", drop="first"),["Street"])
+], remainder="passthrough")
+
+# ColumnTransformer for all original features that we want to keep
+relevant_cols_transformer = ColumnTransformer(transformers=[
+    ("preprocess", preprocess_cols_transformer, columns_needing_preprocessing),
+    ("passthrough", FunctionTransformer(), passthrough_columns)
+], remainder="drop")
+
+# Feature union (currently only contains original features)
+feature_union = FeatureUnion(transformer_list=[
+    ("original_features", relevant_cols_transformer),
+    ("engineered_features", feature_eng)
+])
+
+# Pipeline (currently only contains feature union)
+pipe = Pipeline(steps=[
+    ("all_features", feature_union)
+])
+pipe.fit_transform(X_train)
+
+# Transform X_train and create dataframe for readability
+
+X_train_transformed = pipe.fit_transform(X_train)
+
+# It's pretty involved to get the OHE names here. Most of the
+# time you don't need this step, the idea is just to improve
+# dataframe readability for you, so these labels are hard-coded
+
+df_columns = [
+    # One-hot encoded FireplaceQu
+    'Ex', 'Fa', 'Gd', 'N/A', 'Po', 'TA',
+    # Other preprocessed columns
+    'LotFrontage', 'Street',
+    # Other columns that need to be preprocessed eventually
+    'GrLivArea', 'LotArea', 'YearBuilt', 'OverallQual',
+    # Passthrough columns
+    'BedroomAbvGr', 'YrSold', 'MoSold', 'FullBath', 'Fireplaces',
+    'YearRemodAdd', 'OverallCond', 'TotRmsAbvGrd', 'LotFrontage_Missing'
+]
+pd.DataFrame(
+    X_train_transformed,
+    columns=df_columns
+)
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Ex</th>
+      <th>Fa</th>
+      <th>Gd</th>
+      <th>N/A</th>
+      <th>Po</th>
+      <th>TA</th>
+      <th>LotFrontage</th>
+      <th>Street</th>
+      <th>GrLivArea</th>
+      <th>LotArea</th>
+      <th>...</th>
+      <th>OverallQual</th>
+      <th>BedroomAbvGr</th>
+      <th>YrSold</th>
+      <th>MoSold</th>
+      <th>FullBath</th>
+      <th>Fireplaces</th>
+      <th>YearRemodAdd</th>
+      <th>OverallCond</th>
+      <th>TotRmsAbvGrd</th>
+      <th>LotFrontage_Missing</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>43.0</td>
+      <td>1.0</td>
+      <td>3182.0</td>
+      <td>2005.0</td>
+      <td>...</td>
+      <td>7.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2008.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2006.0</td>
+      <td>7.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>78.0</td>
+      <td>1.0</td>
+      <td>10140.0</td>
+      <td>1974.0</td>
+      <td>...</td>
+      <td>6.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>2006.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>6.0</td>
+      <td>1999.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>60.0</td>
+      <td>1.0</td>
+      <td>9060.0</td>
+      <td>1939.0</td>
+      <td>...</td>
+      <td>6.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>2009.0</td>
+      <td>0.0</td>
+      <td>10.0</td>
+      <td>5.0</td>
+      <td>1950.0</td>
+      <td>6.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>70.0</td>
+      <td>1.0</td>
+      <td>12342.0</td>
+      <td>1960.0</td>
+      <td>...</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>2007.0</td>
+      <td>1.0</td>
+      <td>8.0</td>
+      <td>5.0</td>
+      <td>1978.0</td>
+      <td>6.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>75.0</td>
+      <td>1.0</td>
+      <td>9750.0</td>
+      <td>1958.0</td>
+      <td>...</td>
+      <td>6.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>2007.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>6.0</td>
+      <td>1958.0</td>
+      <td>7.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1090</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>78.0</td>
+      <td>1.0</td>
+      <td>9317.0</td>
+      <td>2006.0</td>
+      <td>...</td>
+      <td>6.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>2007.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>2006.0</td>
+      <td>6.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1091</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>65.0</td>
+      <td>1.0</td>
+      <td>7804.0</td>
+      <td>1928.0</td>
+      <td>...</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>2009.0</td>
+      <td>2.0</td>
+      <td>12.0</td>
+      <td>3.0</td>
+      <td>1950.0</td>
+      <td>7.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1092</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>60.0</td>
+      <td>1.0</td>
+      <td>8172.0</td>
+      <td>1955.0</td>
+      <td>...</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>2006.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>7.0</td>
+      <td>1990.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1093</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>55.0</td>
+      <td>1.0</td>
+      <td>7642.0</td>
+      <td>1918.0</td>
+      <td>...</td>
+      <td>7.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>2007.0</td>
+      <td>1.0</td>
+      <td>6.0</td>
+      <td>8.0</td>
+      <td>1998.0</td>
+      <td>7.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1094</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>53.0</td>
+      <td>1.0</td>
+      <td>3684.0</td>
+      <td>2007.0</td>
+      <td>...</td>
+      <td>7.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2009.0</td>
+      <td>1.0</td>
+      <td>6.0</td>
+      <td>5.0</td>
+      <td>2007.0</td>
+      <td>7.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>1095 rows × 21 columns</p>
+</div>
+
+
+
+Now is a good time to look at the overall pipeline again, to understand what all the pieces are doing:
+
+
+```python
+pipe
+```
+
+
+
+
+<style>div.sk-top-container {color: black;background-color: white;}div.sk-toggleable {background-color: white;}label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.2em 0.3em;box-sizing: border-box;text-align: center;}div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}div.sk-estimator {font-family: monospace;background-color: #f0f8ff;margin: 0.25em 0.25em;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;}div.sk-estimator:hover {background-color: #d4ebff;}div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 2em;bottom: 0;left: 50%;}div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;}div.sk-item {z-index: 1;}div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;}div.sk-parallel-item {display: flex;flex-direction: column;position: relative;background-color: white;}div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}div.sk-parallel-item:only-child::after {width: 0;}div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0.2em;box-sizing: border-box;padding-bottom: 0.1em;background-color: white;position: relative;}div.sk-label label {font-family: monospace;font-weight: bold;background-color: white;display: inline-block;line-height: 1.2em;}div.sk-label-container {position: relative;z-index: 2;text-align: center;}div.sk-container {display: inline-block;position: relative;}</style><div class="sk-top-container"><div class="sk-container"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="d286f531-66bc-4362-b322-2340b5671fdf" type="checkbox" ><label class="sk-toggleable__label" for="d286f531-66bc-4362-b322-2340b5671fdf">Pipeline</label><div class="sk-toggleable__content"><pre>Pipeline(steps=[('all_features',
+                 FeatureUnion(transformer_list=[('original_features',
+                                                 ColumnTransformer(transformers=[('preprocess',
+                                                                                  ColumnTransformer(remainder='passthrough',
+                                                                                                    transformers=[('fireplace_qu',
+                                                                                                                   Pipeline(steps=[('impute',
+                                                                                                                                    SimpleImputer(fill_value='N/A',
+                                                                                                                                                  strategy='constant')),
+                                                                                                                                   ('one_hot_encode',
+                                                                                                                                    OneHotEncoder(handle_unknown='ignore'))]),
+                                                                                                                   ['Firepla...
+                                                                                  ['FireplaceQu',
+                                                                                   'LotFrontage',
+                                                                                   'Street',
+                                                                                   'LotArea',
+                                                                                   'YearBuilt',
+                                                                                   'GrLivArea',
+                                                                                   'OverallQual']),
+                                                                                 ('passthrough',
+                                                                                  FunctionTransformer(),
+                                                                                  ['FullBath',
+                                                                                   'BedroomAbvGr',
+                                                                                   'YrSold',
+                                                                                   'Fireplaces',
+                                                                                   'MoSold',
+                                                                                   'OverallCond',
+                                                                                   'YearRemodAdd',
+                                                                                   'TotRmsAbvGrd'])])),
+                                                ('engineered_features',
+                                                 ColumnTransformer(transformers=[('frontage_missing',
+                                                                                  MissingIndicator(features='all'),
+                                                                                  ['LotFrontage'])]))]))])</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="f9d227c4-f808-4765-8e7e-99b00ba35c34" type="checkbox" ><label class="sk-toggleable__label" for="f9d227c4-f808-4765-8e7e-99b00ba35c34">all_features: FeatureUnion</label><div class="sk-toggleable__content"><pre>FeatureUnion(transformer_list=[('original_features',
+                                ColumnTransformer(transformers=[('preprocess',
+                                                                 ColumnTransformer(remainder='passthrough',
+                                                                                   transformers=[('fireplace_qu',
+                                                                                                  Pipeline(steps=[('impute',
+                                                                                                                   SimpleImputer(fill_value='N/A',
+                                                                                                                                 strategy='constant')),
+                                                                                                                  ('one_hot_encode',
+                                                                                                                   OneHotEncoder(handle_unknown='ignore'))]),
+                                                                                                  ['FireplaceQu']),
+                                                                                                 ('impute_frontage',
+                                                                                                  Simpl...
+                                                                 ['FireplaceQu',
+                                                                  'LotFrontage',
+                                                                  'Street',
+                                                                  'LotArea',
+                                                                  'YearBuilt',
+                                                                  'GrLivArea',
+                                                                  'OverallQual']),
+                                                                ('passthrough',
+                                                                 FunctionTransformer(),
+                                                                 ['FullBath',
+                                                                  'BedroomAbvGr',
+                                                                  'YrSold',
+                                                                  'Fireplaces',
+                                                                  'MoSold',
+                                                                  'OverallCond',
+                                                                  'YearRemodAdd',
+                                                                  'TotRmsAbvGrd'])])),
+                               ('engineered_features',
+                                ColumnTransformer(transformers=[('frontage_missing',
+                                                                 MissingIndicator(features='all'),
+                                                                 ['LotFrontage'])]))])</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><label>original_features</label></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="a4d6f83e-5514-4d7b-9769-7f067b46f088" type="checkbox" ><label class="sk-toggleable__label" for="a4d6f83e-5514-4d7b-9769-7f067b46f088">preprocess</label><div class="sk-toggleable__content"><pre>['FireplaceQu', 'LotFrontage', 'Street', 'LotArea', 'YearBuilt', 'GrLivArea', 'OverallQual']</pre></div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="9dea9f6c-3e8b-44d4-8a9c-5568f1dd7720" type="checkbox" ><label class="sk-toggleable__label" for="9dea9f6c-3e8b-44d4-8a9c-5568f1dd7720">fireplace_qu</label><div class="sk-toggleable__content"><pre>['FireplaceQu']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="de7519dd-e7aa-4596-8465-6674bba51c14" type="checkbox" ><label class="sk-toggleable__label" for="de7519dd-e7aa-4596-8465-6674bba51c14">SimpleImputer</label><div class="sk-toggleable__content"><pre>SimpleImputer(fill_value='N/A', strategy='constant')</pre></div></div></div><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="2499113d-2806-4653-8ce2-d29c732847ee" type="checkbox" ><label class="sk-toggleable__label" for="2499113d-2806-4653-8ce2-d29c732847ee">OneHotEncoder</label><div class="sk-toggleable__content"><pre>OneHotEncoder(handle_unknown='ignore')</pre></div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="076211e1-b1ca-4784-98d7-a46a813b2102" type="checkbox" ><label class="sk-toggleable__label" for="076211e1-b1ca-4784-98d7-a46a813b2102">impute_frontage</label><div class="sk-toggleable__content"><pre>['LotFrontage']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="f032d2c0-919b-4966-a372-bedd8a0d2a1c" type="checkbox" ><label class="sk-toggleable__label" for="f032d2c0-919b-4966-a372-bedd8a0d2a1c">SimpleImputer</label><div class="sk-toggleable__content"><pre>SimpleImputer(strategy='median')</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="66ab12f4-75a5-4f3a-92f2-038ae32faba6" type="checkbox" ><label class="sk-toggleable__label" for="66ab12f4-75a5-4f3a-92f2-038ae32faba6">encode_street</label><div class="sk-toggleable__content"><pre>['Street']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="b2a3a4f6-9074-40d1-bae1-467a0d32edf1" type="checkbox" ><label class="sk-toggleable__label" for="b2a3a4f6-9074-40d1-bae1-467a0d32edf1">OneHotEncoder</label><div class="sk-toggleable__content"><pre>OneHotEncoder(drop='first')</pre></div></div></div></div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="910271a8-e2e3-4691-88b5-a5b7fd34762f" type="checkbox" ><label class="sk-toggleable__label" for="910271a8-e2e3-4691-88b5-a5b7fd34762f">passthrough</label><div class="sk-toggleable__content"><pre>['FullBath', 'BedroomAbvGr', 'YrSold', 'Fireplaces', 'MoSold', 'OverallCond', 'YearRemodAdd', 'TotRmsAbvGrd']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="19d68b7b-44d0-4532-afe1-862c306c9e17" type="checkbox" ><label class="sk-toggleable__label" for="19d68b7b-44d0-4532-afe1-862c306c9e17">FunctionTransformer</label><div class="sk-toggleable__content"><pre>FunctionTransformer()</pre></div></div></div></div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><label>engineered_features</label></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="d462bbfc-bf13-4521-8e5a-b33810ebb679" type="checkbox" ><label class="sk-toggleable__label" for="d462bbfc-bf13-4521-8e5a-b33810ebb679">frontage_missing</label><div class="sk-toggleable__content"><pre>['LotFrontage']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="67794b16-cc05-4e16-8416-bea3abf94c8f" type="checkbox" ><label class="sk-toggleable__label" for="67794b16-cc05-4e16-8416-bea3abf94c8f">MissingIndicator</label><div class="sk-toggleable__content"><pre>MissingIndicator(features='all')</pre></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
+
+
+
+Now we're finally at the point where we can make a prediction, using `pipe` to preprocess the data, and an `ElasticNet` model to predict!
+
+
+```python
+model = ElasticNet(random_state=1)
+model.fit(X_train_transformed, y_train)
+model.score(X_train_transformed, y_train)
+```
+
+
+
+
+    0.7496539710170391
+
+
